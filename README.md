@@ -22,15 +22,19 @@ Each 250 base-pair read was sequenced from one end of the target cDNA, so that t
 <u>Sequence processing:</u>
 
 * Quality control, UMI annotation and primer masking
+
 	1. FilterSeq quality
 	2. MaskPrimer score
 * Generation of UMI consensus sequences
+
 	3. PairSeq
 	4. BuildConsensus
 * Paired-end assembly of UMI consensus sequences
+
 	5. PairSeq	
 	6. AssemblePairs align
 * Deduplication and filtering
+
 	7. ParseHeaders collapse
 	8. CollapseSeq
 	9. SplitSeq group
