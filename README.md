@@ -1,38 +1,46 @@
-**A pipeline for BCR repertoire libraries from the form of - UMI Barcoded Illumina MiSeq 2x250 BCR mRNA. that were produced in the same fashion as those in [sterm et al. 2014](https://pubmed.ncbi.nlm.nih.gov/25100741/)**
+A pipeline for BCR repertoire libraries from the form of - UMI Barcoded Illumina MiSeq 2x250 BCR mRNA. that were produced in the same fashion as those in [sterm et al. 2014](https://pubmed.ncbi.nlm.nih.gov/25100741/)
 
 
-<u>Sequence library:</u>
+Library preperation and sequencing method:
 
-The sequences were amplified using CPrimers and VPrimers. They were sequences with Illumins MiSeq 2x250. 
+The sequences were amplified using specific primers of the C-region and non coding V region of the IGH chain. The generated libraries were then sequenced with Illumins MiSeq 2x250. 
 
 Each 250 base-pair read was sequenced from one end of the target cDNA, so that the two reads together cover the entire variable region of the Ig heavy chain. The V(D)J reading frame proceeds from the start of read 2 to the start of read 1. Read 1 is in the opposite orientation (reverse complement), and contains a 15 nucleotide UMI barcode preceding the C-region primer sequence.
 
-<u>Input files:</u>
+Input files:
 
 1. The read can downloaded from the NCBI Sequence Read Archive under BioProject accession ID: PRJNA248475 or downloaded or downloaded first 25,000 sequences of sample M12 (accession: SRR1383456) using fastq-dump from the SRA Toolkit
 2. The primers sequences available online at the table below.
 
-<u>Output files:</u>
+Output files:
 
 1. sample_collapse-unique.fastq
 2. sample_atleast-2.fastq
-3. log and log tab file for each step.
+3. log tab file for each step.
 
 
-<u>Sequence processing:</u>
+Pipeline container:
+
+* Docker: immcantation/suite:4.3.0
+
+
+Sequence processing steps:
 
 * Quality control, UMI annotation and primer masking
 
 	1. FilterSeq quality
 	2. MaskPrimer score
+	
 * Generation of UMI consensus sequences
 
 	3. PairSeq
 	4. BuildConsensus
+	
 * Paired-end assembly of UMI consensus sequences
 
 	5. PairSeq	
 	6. AssemblePairs align
+	
 * Deduplication and filtering
 
 	7. ParseHeaders collapse
@@ -40,8 +48,9 @@ Each 250 base-pair read was sequenced from one end of the target cDNA, so that t
 	9. SplitSeq group
 
 
+Primers used:
 
-**CPrimers**
+* C-region (R1):
 
 | Header     | Primer |
 | ----------- | ----------- |
@@ -52,7 +61,7 @@ Each 250 base-pair read was sequenced from one end of the target cDNA, so that t
 | IGHE   | CGGATGGGCTCTGTGTGG       |
 
 
-**VPrimers**
+* V-region (R2):
 
 | Header     | Primer |
 | ----------- | ----------- |
