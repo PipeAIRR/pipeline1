@@ -5,18 +5,32 @@ Library preperation and sequencing method:
 
 The sequences were amplified using specific primers of the C-region and non coding V region of the IGH chain. The generated libraries were then sequenced with Illumins MiSeq 2x250. 
 
-Each 250 base-pair read was sequenced from one end of the target cDNA, so that the two reads together cover the entire variable region of the Ig heavy chain. The V(D)J reading frame proceeds from the start of read 2 to the start of read 1. Read 1 is in the opposite orientation (reverse complement), and contains a 15 nucleotide UMI barcode preceding the C-region primer sequence.
+
+Each read contains 250 base-pair and was sequenced from one end of the target cDNA, so that the two reads together cover the entire the full variable region of the Ig heavy chain. The V(D)J reading frame proceeds from the start of read 2 to the start of read 1. Read 1 is in the reverse complement orientation, and contains a 15 nucleotide UMI barcode preceding the C-region primer sequence.
+
 
 Input files:
 
-1. The read can downloaded from the NCBI Sequence Read Archive under BioProject accession ID: PRJNA248475 or downloaded or downloaded first 25,000 sequences of sample M12 (accession: SRR1383456) using fastq-dump from the SRA Toolkit
-2. The primers sequences available online at the table below.
+1. Two fastq file of paird sequencing
+2. primer files
+
+To test the pipeline:
+
+We recommend to test the pipeline using a small example from the original reads that can download using the fastq-dump command.
+
+```bash
+fastq-dump --split-files -X 25000 SRR1383456
+```
+
+And upload directly to dolphinnext. 
+
 
 Output files:
 
-1. sample_collapse-unique.fastq
-2. sample_atleast-2.fastq
-3. log tab file for each step.
+1. {sampleName}_collapse-unique.fastq
+2. {sampleName}_atleast-2.fastq
+3. log tab file for each steps
+4. report for some of the steps
 
 
 Pipeline container:
@@ -28,7 +42,7 @@ Sequence processing steps:
 
 * Quality control, UMI annotation and primer masking
 
-	1. FilterSeq quality
+	1. FilterSeq qality
 	2. MaskPrimer score
 	
 * Generation of UMI consensus sequences
@@ -50,62 +64,9 @@ Sequence processing steps:
 
 Primers used:
 
-* C-region (R1):
-
-| Header     | Primer |
-| ----------- | ----------- |
-| IGHG   | CSGATGGGCCCTTGGTGG       |
-| IGHM   |GGGTTGGGGCGGATGCAC        |
-| IGHA   | CCTTGGGGCTGGTCGGGG       |
-| IGHD   | CATCCGGAGCCTTGGTGG       |
-| IGHE   | CGGATGGGCTCTGTGTGG       |
+* [Stern2014_CPrimers (R1)](https://bitbucket.org/kleinstein/presto/src/master/examples/Stern2014/Stern2014_CPrimers.fasta)
 
 
-* V-region (R2):
 
-| Header     | Primer |
-| ----------- | ----------- |
-| IGHV_1   | GAGGTGCAGCTGGTGGAGTCCG        |
-| IGHV_2   | GAGGTGCAGCTGGTGGAGTCTGG       |
-| IGHV_3   | CAGGTCACCTTGAGGGAGTCTGGTCC    |
-| IGHV_4   | CAGGTTCAGCTGTTGCAGCCTGG       |
-| IGHV_5   | CAGGTGCAGCTACAGCAGTGGGG       |
-| IGHV_6   | CAGGTGCAGCTGGTGCAATCTGG       |
-| IGHV_7   | CAGGTCACCTTGAAGGAGTCTGGTCC    |
-| IGHV_8   | CAGGTCCAGCTGGTACAGTCTGGG      |
-| IGHV_9   | CAGGACCAGTTGGTGCAGTCTGGG      |
-| IGHV_10  | CAGGTGCAGCTGGTGGAGTCTGG       |
-| IGHV_11   | CAGATGCAGCTGGTGCAGTCTGG       |
-| IGHV_12   | CAAATGCAGCTGGTGCAGTCTGGG      |
-| IGHV_13   | GAAGTGCAGCTGGTGGAGTCTGGG      |
-| IGHV_14   | CAGGTGCAGCTGGTGCAGTCTG        |
-| IGHV_15   | GAGGATCAGCTGGTGGAGTCTGGG      |
-| IGHV_16   | GAGGTCCAGCTGGTACAGTCTGGG      |
-| IGHV_17   | CAGCTGCAGCTGCAGGAGTCC         |
-| IGHV_20   | CAGGTACAGCTGCAGCAGTCAGGT      |
-|IGHV_21	|GAGATGCAGCTGGTGGAGTCTGGG	|
-|IGHV_22	|GAGGTGCATCTGGTGGAGTCTGGG	|
-|IGHV_25	|CAGGTCCAACTGGTGTAGTCTGGAGC	|
-|IGHV_26	|GAGGTGCAGCTGGTGCAGTCTG		|
-|IGHV_27	|GAGGTGCAGCTGGTGGAGTCTCG	|
-|IGHV_28	|GAGGTTCAGCTGGTGCAGTCTGGG	|
-|IGHV_30	|GAAGTGCAGCTGGTGCAGTCTGG	|
-|IGHV_31	|GAGGTGGAGCTGATAGAGTCCATAGA	|
-|IGHV_32	|ACAGTGCAGCTGGTGGAGTCTGG	|
-|IGHV_33	|GAGGTGCAGCTGGAGGAGTCTGG	|
-|IGHV_34	|GAGGTACAGCTGGTGGAGTCTGAAGA	|
-|IGHV_35	|CAGGTGCAGCTGCAGGAGTCG		|
-|IGHV_36	|GAGGTGCAGCTGTTGGAGTCTGGG	|
-|IGHV_37	|CAGGTGCAGCTGGGGCAGTC		|
-|IGHV_38	|CAGCTGCAGCTGCAGGAGTCG		|
-|IGHV_39	|CAGGTTCAGCTGGTGCAGTCTGGA	|
-|IGHV_40	|GAGGTGCAGCTGGTAGAGTCTGGG	|
-|IGHV_41	|CAGGTCCAGCTTGTGCAGTCTGGG	|
-|IGHV_42	|GAGGTGCAGCTGTTGCAGTCTGC	|
-|IGHV_43	|GAGGTACAACTGGTGGAGTCTGGGGG	|
-|IGHV_44	|CAGATCACCTTGAAGGAGTCTGGTCC	|
-|IGHV_45	|CAGGTACAGCTGATGCAGTCTGGGG	|
-	
-
-
+* [Stern2014_VPrimers (R2)](https://bitbucket.org/kleinstein/presto/src/master/examples/Stern2014/Stern2014_VPrimers.fasta)
 

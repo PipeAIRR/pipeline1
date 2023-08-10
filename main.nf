@@ -13,7 +13,7 @@ params.outdir = 'results'
 //* params.edit_collapse_seq_params =  "no"   //* @dropdown @options:"yes","no" @show_settings:"collapse_seq"
 //* params.edit_split_seq_params =  "no"   //* @dropdown @options:"yes","no" @show_settings:"split_seq"
 //* params.edit_parse_header_table =  "no"   //* @dropdown @options:"yes","no" @show_settings:"parse_headers" @description:"If edit true, then parametrs in the parse_header_table tab should be edited"
-
+//* params.edit_parse_log_AP_params =  "no"  //* @dropdown @options:"yes","no" @show_settings:"parse_log_AP"
 //* autofill
 if ($HOSTNAME == "default"){
     $DOCKER_IMAGE = "immcantation/suite:4.3.0"
@@ -33,20 +33,8 @@ if ($HOSTNAME == "ig03.lnx.biu.ac.il"){
 
 //* autofill
 
-run_dir = params.outdir.replace("report", "run")
 
-process download {
-
-    script:
-    """
-    curl https://bitbucket.org/kleinstein/presto/raw/924024a551e14d086fff0f055d27372bb42526c0/examples/Stern2014/Stern2014_VPrimers.fasta -o ${run_dir}/Stern2014_VPrimers.fasta
-    
-    curl https://bitbucket.org/kleinstein/presto/raw/924024a551e14d086fff0f055d27372bb42526c0/examples/Stern2014/Stern2014_Crimers.fasta -o ${run_dir}/Stern2014_CPrimers.fasta
-
-    """
-}
-
-if((params.edit_filter_quality_params && (params.edit_filter_quality_params == "no"))){
+if(params.edit_filter_quality_params == "no"){
 
     // Process Parameters for params.Filter_Sequence_Quality_filter_seq_quality:
     params.Filter_Sequence_Quality_filter_seq_quality.method = "quality"
@@ -55,25 +43,26 @@ if((params.edit_filter_quality_params && (params.edit_filter_quality_params == "
 
 }
 
-if((params.edit_mask_primer_params && (params.edit_mask_primer_params == "no"))){
+if(params.edit_mask_primer_params == "no"){
+	
     // Process Parameters for Mask_Primer_MaskPrimers:
-    params.Pair_Sequence_pre_consensus_pair_seq.nproc = params.nproc
+    params.Mask_Primer_MaskPrimers.nproc = params.nproc
     params.Mask_Primer_MaskPrimers.method = ["score","score"]
     params.Mask_Primer_MaskPrimers.mode = ["cut","mask"]
     params.Mask_Primer_MaskPrimers.primer_field = ["PRIMER","PRIMER"]
     params.Mask_Primer_MaskPrimers.barcode_field = ["BARCODE","BARCODE"]
-   params.Mask_Primer_MaskPrimers.start = [0,0]
+    params.Mask_Primer_MaskPrimers.start = [0,0]
     params.Mask_Primer_MaskPrimers.barcode = ["true","false"]
     params.Mask_Primer_MaskPrimers.umi_length = [15,0]
     params.Mask_Primer_MaskPrimers.maxerror = [0.2,0.2]
     params.Mask_Primer_MaskPrimers.revpr = ["false","false"]
     params.Mask_Primer_MaskPrimers.failed = "true"
-    params.Mask_Primer_MaskPrimers.R1_primers = "${run_dir}/Stern2014_CPrimers.fasta"
-    params.Mask_Primer_MaskPrimers.R2_primers = "${run_dir}/Stern2014_VPrimers.fasta"
+    params.Mask_Primer_MaskPrimers.R1_primers = "${projectDir}/primers/Stern2014_CPrimers.fasta"
+    params.Mask_Primer_MaskPrimers.R2_primers = "${projectDir}/primers/Stern2014_VPrimers.fasta"
 }
 
 
-if((params.edit_pair_sequence_pre_consensus_params && (params.edit_pair_sequence_pre_consensus_params == "no"))){
+if(params.edit_pair_sequence_pre_consensus_params == "no"){
 
     // Process Parameters for params.Pair_Sequence_pre_consensus_pair_seq:
     params.Pair_Sequence_pre_consensus_pair_seq.coord = "sra"
@@ -85,7 +74,7 @@ if((params.edit_pair_sequence_pre_consensus_params && (params.edit_pair_sequence
 }
 
 
-if((params.edit_build_consensus_params && (params.edit_build_consensus_params == "no"))){
+if(params.edit_build_consensus_params == "no"){
 
     // Process Parameters for params.Build_Consensus_build_consensus:
     params.Build_Consensus_build_consensus.failed = "false"
@@ -104,7 +93,7 @@ if((params.edit_build_consensus_params && (params.edit_build_consensus_params ==
 
 }
 
-if((params.edit_pair_sequence_post_consensus_params && (params.edit_pair_sequence_post_consensus_params == "no"))){
+if(params.edit_pair_sequence_post_consensus_params == "no"){
 
     // Process Parameters for params.Pair_Sequence_post_consensus_pair_seq:
     params.Pair_Sequence_post_consensus_pair_seq.coord = "presto"
@@ -115,7 +104,7 @@ if((params.edit_pair_sequence_post_consensus_params && (params.edit_pair_sequenc
 
 }
 
-if((params.edit_assemble_pairs_params && (params.edit_assemble_pairs_params == "no"))){
+if(params.edit_assemble_pairs_params == "no"){
 
     // Process Parameters for params.Assemble_pairs_assemble_pairs:
     params.Assemble_pairs_assemble_pairs.method = "align"
@@ -138,8 +127,12 @@ if((params.edit_assemble_pairs_params && (params.edit_assemble_pairs_params == "
     params.Assemble_pairs_assemble_pairs.gap = 0
 }
 
+if(params.edit_parse_log_AP_params == "no"){
+	// Process Parameters for params.Assemble_pairs_parse_log_AP:
+	params.Assemble_pairs_parse_log_AP.field_to_parse = "ID REFID LENGTH OVERLAP GAP ERROR IDENTITY PVALUE EVALUE1 EVALUE2"
+}
 
-if((params.edit_parse_headers_params && (params.edit_parse_headers_params == "no"))){
+if(params.edit_parse_headers_params == "no"){
     // Process Parameters for params.Parse_header_parse_headers:
     params.Parse_header_parse_headers.method = "collapse"
     params.Parse_header_parse_headers.act = "min"
@@ -147,7 +140,7 @@ if((params.edit_parse_headers_params && (params.edit_parse_headers_params == "no
     params.collapse_sequences_collapse_seq.nproc = params.nproc
 }
 
-if((params.edit_collapse_seq_params && (params.edit_collapse_seq_params == "no"))){
+if(params.edit_collapse_seq_params == "no"){
     // Process Parameters for params.edit_collapse_seq_params:
     params.collapse_sequences_collapse_seq.act = "sum"
     params.collapse_sequences_collapse_seq.inner = "true"
@@ -156,14 +149,14 @@ if((params.edit_collapse_seq_params && (params.edit_collapse_seq_params == "no")
     params.collapse_sequences_collapse_seq.nproc = params.nproc
 }
 
-if((params.edit_split_seq_params && (params.edit_split_seq_params == "no"))){
+if(params.edit_split_seq_params == "no"){
     // Process Parameters for params.split_sequences_split_seq:
     params.split_sequences_split_seq.field = "CONSCOUNT"
     params.split_sequences_split_seq.num = 2
     params.collapse_sequences_collapse_seq.nproc = params.nproc
 }
 
-if((params.edit_parse_header_table && (params.edit_parse_header_table == "no"))){
+if(params.edit_parse_header_table == "no"){
     // Process Parameters for params.Parse_header_table_parse_headers:
     params.Parse_header_table_parse_headers.method = "table"
     params.Parse_header_table_parse_headers.act = "min"
@@ -351,7 +344,7 @@ if(matee=="pair"){
 	library(knitr)
 	library(captioner)
 	
-	plot_titles <- c("Read 1", "Read 2")#params$quality_titles
+	plot_titles <- c("Read")#params$quality_titles
 	if (!exists("tables")) { tables <- captioner(prefix="Table") }
 	if (!exists("figures")) { figures <- captioner(prefix="Figure") }
 	figures("quality", 
@@ -401,6 +394,7 @@ output:
  file "*.html"  into g0_9_outputFileHTML00
 
 """
+
 #!/usr/bin/env Rscript 
 
 rmarkdown::render("${rmk}", clean=TRUE, output_format="html_document", output_dir=".")
@@ -740,6 +734,7 @@ output:
  file "*.html"  into g53_16_outputFileHTML00
 
 """
+
 #!/usr/bin/env Rscript 
 
 rmarkdown::render("${rmk}", clean=TRUE, output_format="html_document", output_dir=".")
@@ -1215,6 +1210,7 @@ output:
  file "*.html"  into g18_22_outputFileHTML00
 
 """
+
 #!/usr/bin/env Rscript 
 
 rmarkdown::render("${rmk}", clean=TRUE, output_format="html_document", output_dir=".")
@@ -1463,6 +1459,7 @@ output:
  file "*.html"  into g54_16_outputFileHTML00
 
 """
+
 #!/usr/bin/env Rscript 
 
 rmarkdown::render("${rmk}", clean=TRUE, output_format="html_document", output_dir=".")
@@ -1768,6 +1765,7 @@ output:
  file "*.html"  into g65_7_outputFileHTML00
 
 """
+
 #!/usr/bin/env Rscript 
 
 rmarkdown::render("${rmk}", clean=TRUE, output_format="html_document", output_dir=".")
@@ -1935,6 +1933,7 @@ output:
  file "*.html"  into g55_1_outputFileHTML00
 
 """
+
 #!/usr/bin/env Rscript 
 
 rmarkdown::render("${rmk}", clean=TRUE, output_format="html_document", output_dir=".")
